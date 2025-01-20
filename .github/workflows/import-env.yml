@@ -1,0 +1,32 @@
+name: "Import environment variables from env file"
+on:
+- push
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v4
+
+    - name: List files
+      run: ls -la $GITHUB_WORKSPACE
+
+    - name: SHOW env
+      run: cat $GITHUB_WORKSPACE/test.env
+
+    # see: https://github.com/actions/runner/issues/655
+    - name: Import environment variables from a file
+      id: import-env
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          const util = require('util');
+          const envContent = fs.readFileSync(`${process.env.GITHUB_WORKSPACE}/test.env`, 'utf8');
+          const env = util.parseEnv(envContent);
+          Object.entries(env).forEach(x => core.exportVariable(...x));
+          console.log(env);
+
+    - name: Show environment variables
+      run: echo $HOGE;
