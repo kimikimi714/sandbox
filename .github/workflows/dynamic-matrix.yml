@@ -1,0 +1,46 @@
+name: Dynamic Matrix Workflow with github-script
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  generate_matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix_values: ${{ steps.generate.outputs.matrix }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Generate Matrix Values
+        id: generate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const directoryPath = '.';
+            const files = fs.readdirSync(directoryPath);
+            return { matrix: files };
+
+      - name: Show Matrix Values
+        run: |
+          echo ${MATRIX}
+        env:
+          MATRIX: ${{ steps.generate.outputs.matrix }}
+
+  use_matrix:
+    needs: generate_matrix
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file: ${{ fromJSON(needs.generate_matrix.outputs.matrix_values) }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Use Matrix Value
+        run: |
+          echo "Processing file: ${{ matrix.file }}"
+          # ここでmatrixの要素を使った処理を記述
