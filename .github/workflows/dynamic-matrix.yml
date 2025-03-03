@@ -20,7 +20,7 @@ jobs:
             const fs = require('fs');
             const directoryPath = '.';
             const files = fs.readdirSync(directoryPath);
-            return { matrix: files };
+            return { matrix: JSON.stringify(files) };
 
       - name: Show Matrix Values
         run: |
