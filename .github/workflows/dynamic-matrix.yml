@@ -7,7 +7,7 @@ jobs:
   generate_matrix:
     runs-on: ubuntu-latest
     outputs:
-      matrix_values: ${{ steps.generate.outputs.matrix }}
+      matrix_values: ${{ steps.generate.outputs.result }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -21,13 +21,13 @@ jobs:
             const directoryPath = '.';
             const files = fs.readdirSync(directoryPath);
             console.log(files);
-            return { matrix: JSON.stringify(files) };
+            return files;
 
       - name: Show Matrix Values
         run: |
           echo ${MATRIX}
         env:
-          MATRIX: ${{ steps.generate.outputs.matrix }}
+          MATRIX: ${{ steps.generate.outputs.result }}
 
   use_matrix:
     needs: generate_matrix
