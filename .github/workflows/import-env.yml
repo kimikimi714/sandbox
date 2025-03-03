@@ -1,6 +1,8 @@
 name: "Import environment variables from env file"
 on:
-- push
+  push:
+    branches:
+      - main
 
 jobs:
   extract:
